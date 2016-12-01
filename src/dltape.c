@@ -50,7 +50,3 @@ void dltape_set(DLTape *tape, int val) {
 int dltape_getatptr(DLTape *tape) {
     return (*tape).(*ptr).value;
 }
-
-/* Frees the memory used by a DLTape. */
-void dltape_free(DLTape *tape) {
-}

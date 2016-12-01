@@ -41,7 +41,4 @@ void dltape_set(DLTape *tape, int val);
 /* Returns the int found at the tape's pointer. */
 int dltape_getatptr(DLTape *tape);
 
-/* Frees the memory used by a DLTape. */
-void dltape_free(DLTape *tape);
-
 #endif
