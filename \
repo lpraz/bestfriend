@@ -18,11 +18,7 @@ int main(int argc, char **argv) {
     /* Declarations - brainfuck file */
     char *bfpath = "in.bf" /* TODO: make user-specifiable */
     FILE *bfsrc = fopen(bfpath, "r");
-    char cmd;
-    int file_ptr;
-    
-    /* Declarations - user interaction */
-    char in;
+    char cmd
     
     if (bfsrc == NULL) {
         printf("Exception - couldn't open %s!", bfpath);
@@ -43,13 +39,11 @@ int main(int argc, char **argv) {
             case '<': /* Seek left */
                 tape_seekl(&tape);
             case '.': /* Output cell as char */
-                printf("%c", (char)tape_get(&tape));
             case ',': /* Input char to cell */
-                tape_set(&tape, getchar());
+                tape_set(&tape, /* get input */);
             case '[': /* Begin loop, jump to end if cell == 0 */
             case ']': /* End loop, jump to start if cell != 0 */
         }
-        file_ptr++;
     }
     
     /* Cleanup - close */

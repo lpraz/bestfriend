@@ -29,6 +29,9 @@ void tape_seekl(Tape *tape, int dist);
 /* Seeks the tape's pointer dist cells to the right. */
 void tape_seekr(Tape *tape, int dist);
 
+/* Seeks the tape pointer to pos. */
+void tape_seeks(Tape *tape, int pos);
+
 /* Increments the cell at the tape's pointer by val. */
 void tape_inc(Tape *tape, int val);
 
