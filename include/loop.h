@@ -13,14 +13,8 @@
 /* Stdlib imports */
 #include <stdbool.h>
 
-/* Structure */
-typedef Loop {
-    int start;
-    int end;
-} Loop;
-
 /* Used at start of loop, returns whether loop should be skipped. */
-bool loop_start(Stack *stk, int cell);
+bool loop_start(Stack *stk, int cell, int pos);
 
 /* Used at end of loop, returns whether loop should be repeated. */
 bool loop_end(Stack *stk, int cell);
