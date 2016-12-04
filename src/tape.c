@@ -6,6 +6,9 @@
 /* Import self */
 #include "tape.h"
 
+/* Stdlib imports */
+#include <stdlib.h>
+
 /* Initializes a tape. */
 Tape tape_init() {
     int *fwd = (int*)calloc(DEFAULT_FORWARD_SIZE, sizeof(int));
@@ -94,11 +97,11 @@ void tape_fwdgrow(Tape *tape) {
 void tape_revgrow(Tape *tape) {
     int *newrev = malloc(2 * (*tape).revsize * sizeof(int));
     for (int i = 0; i < (*tape).revsize; i++)
-        newrev[i]
+        newrev[i];
 }
 
 /* Frees the memory used by a tape. */
 void tape_free(Tape *tape) {
-    free(tape.fwd);
-    free(tape.rev);
+    free((*tape).fwd);
+    free((*tape).rev);
 }

@@ -17,7 +17,7 @@ SRCEXT = c
 # Specific files
 TARGET = bin/a.out
 SOURCES = $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
-OBJECTS = $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.(SRCEXT)=.o))
+OBJECTS = $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
 
 #
 # Recipes

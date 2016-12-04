@@ -8,7 +8,8 @@
 #include "tape.h"
 
 /* Stdlib imports */
-
+#include <stdbool.h>
+#include <stdio.h>
 
 int main(int argc, char **argv) {
     /* Declarations - data */
@@ -47,16 +48,31 @@ int main(int argc, char **argv) {
             case ',': /* Input char to cell */
                 tape_set(&tape, getchar());
             case '[': /* Begin loop, jump to end if cell == 0 */
+                if (loop_start(&loops, tape_get(&tape), file_ptr))
+                    while (cmd = fgetc(bfsrc); cmd != EOF || cmd != ']');
             case ']': /* End loop, jump to start if cell != 0 */
+                if (loop_end(&loops, tape_get(&tape))) {
+                    if (fseek(bfsrc, file_ptr - loops.top(), SEEK_CUR)
+                            != 0) {
+                        printf("Error in seeking file!");
+                        exit(EXIT_FAILURE);
+                    }
+                }
+                break;
+                        
         }
         file_ptr++;
     }
     
     /* Cleanup - close */
-    if (fclose(bfsrc) != 0)
-        printf("Error in closing file");
+    if (fclose(bfsrc) != 0) {
+        printf("Error in closing %s!", bfpath);
+        exit(EXIT_FAILURE);
+    }
     
     /* Cleanup - free memory */
     stk_free(&loops);
     tape_free(&tape);
+    
+    return 0;
 }
