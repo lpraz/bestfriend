@@ -51,6 +51,7 @@ int main(int argc, char **argv) {
                 break;
             case ',': /* Input char to cell */
                 tape_set(&tape, getchar());
+                break;
             case '[': /* Begin loop, jump to end if cell == 0 */
                 if (loop_start(&loops, tape_get(&tape), file_ptr))
                     while (cmd = fgetc(bfsrc), cmd != EOF && cmd != ']');
