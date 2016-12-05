@@ -7,6 +7,7 @@
 #include "tape.h"
 
 /* Stdlib imports */
+#include <stdio.h>
 #include <stdlib.h>
 
 /* Initializes a tape. */
@@ -40,7 +41,7 @@ void tape_inc(Tape *tape, int val) {
         
         (*tape).fwd[(*tape).ptr] += val;
     } else {
-        while (1 - (*tape).ptr < (*tape).revsize)
+        while (1 - (*tape).ptr >= (*tape).revsize)
             tape_revgrow(tape);
         
         (*tape).rev[1 - (*tape).ptr] += val;
@@ -55,7 +56,7 @@ void tape_dec(Tape *tape, int val) {
         
         (*tape).fwd[(*tape).ptr] -= val;
     } else {
-        while (1 - (*tape).ptr < (*tape).revsize)
+        while (1 - (*tape).ptr >= (*tape).revsize)
             tape_revgrow(tape);
         
         (*tape).rev[1 - (*tape).ptr] += val;
@@ -70,7 +71,7 @@ void tape_set(Tape *tape, int val) {
         
         (*tape).fwd[(*tape).ptr] = val;    
     } else {
-        while (1 - (*tape).ptr < (*tape).revsize)
+        while (1 - (*tape).ptr >= (*tape).revsize)
             tape_revgrow(tape);
         
         (*tape).rev[1 - (*tape).ptr] = val;
@@ -79,25 +80,36 @@ void tape_set(Tape *tape, int val) {
 
 /* Returns the value of the cell at the tape's pointer. */
 int tape_get(Tape *tape) {
-    realloc((*tape).fwd, 2 * (*tape).fwdsize * sizeof(int));
+    if ((*tape).ptr >= 0 && (*tape).ptr < (*tape).fwdsize)
+        return (*tape).fwd[(*tape).ptr];
+    else if ((*tape).ptr < 0 && 1 - (*tape).ptr >= (*tape).revsize)
+        return (*tape).rev[(*tape).ptr];
+    
+    return 0;
+}
+
+/* Grows the right half of the tape (double-growth). */
+void tape_fwdgrow(Tape *tape) {
+    if (realloc((*tape).fwd, 2 * (*tape).fwdsize * sizeof(int)) == NULL) {
+        printf("Error getting memory in tape_fwdgrow!\n");
+        exit(EXIT_FAILURE);
+    }
+    
     for (int i = (*tape).fwdsize; i < (*tape).fwdsize * 2; i++)
         (*tape).fwd[i] = 0;
     (*tape).fwdsize *= 2;
 }
 
-/* Grows the right half of the tape (double-growth). */
-void tape_fwdgrow(Tape *tape) {
-    realloc((*tape).rev, 2 * (*tape).revsize * sizeof(int));
+/* Grows the left half of the tape (double-growth). */
+void tape_revgrow(Tape *tape) {
+    if (realloc((*tape).rev, 2 * (*tape).revsize * sizeof(int)) == NULL) {
+        printf("Error getting memory in tape_revgrow!\n");
+        exit(EXIT_FAILURE);
+    }
+    
     for (int i = (*tape).revsize; i < (*tape).revsize * 2; i++)
         (*tape).rev[i] = 0;
     (*tape).revsize *= 2;
-}
-
-/* Grows the left half of the tape (double-growth). */
-void tape_revgrow(Tape *tape) {
-    int *newrev = malloc(2 * (*tape).revsize * sizeof(int));
-    for (int i = 0; i < (*tape).revsize; i++)
-        newrev[i];
 }
 
 /* Frees the memory used by a tape. */

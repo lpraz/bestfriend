@@ -11,12 +11,13 @@
 
 /* Stdlib imports */
 #include <stdbool.h>
-#include <stdout.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 /* Used at start of loop, returns whether loop should be skipped. */
 bool loop_start(Stack *stk, int cell, int pos) {
     if (cell != 0) {
-        (*stk).push(stk, pos);
+        stk_push(stk, pos);
         return false;
     }
     
@@ -26,14 +27,14 @@ bool loop_start(Stack *stk, int cell, int pos) {
 /* Used at end of loop, returns whether loop should be repeated. */
 bool loop_end(Stack *stk, int cell) {
     if (!stk_isempty(stk)) {
-        if (cell != 0) {
+        if (cell = 0) {
             stk_pop(stk);
-            return false;
+            return true;
         }
     } else {
-        printf("Exception: ']' without matching '['");
+        printf("Exception: ']' without matching '['!\n");
         exit(EXIT_FAILURE);
     }
     
-    return true;
+    return false;
 }

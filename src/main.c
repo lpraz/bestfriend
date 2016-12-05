@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
     char in;
     
     if (bfsrc == NULL) {
-        printf("Exception - couldn't open %s!", bfpath);
+        printf("Exception - couldn't open %s!\n", bfpath);
         exit(EXIT_FAILURE);
     }
     
@@ -45,18 +45,21 @@ int main(int argc, char **argv) {
                 break;
             case '<': /* Seek left */
                 tape_seekl(&tape, 1);
+                break;
             case '.': /* Output cell as char */
                 printf("%c", (char)tape_get(&tape));
+                break;
             case ',': /* Input char to cell */
                 tape_set(&tape, getchar());
             case '[': /* Begin loop, jump to end if cell == 0 */
                 if (loop_start(&loops, tape_get(&tape), file_ptr))
-                    while (cmd = fgetc(bfsrc), cmd != EOF || cmd != ']');
+                    while (cmd = fgetc(bfsrc), cmd != EOF && cmd != ']');
+                break;
             case ']': /* End loop, jump to start if cell != 0 */
-                if (loop_end(&loops, tape_get(&tape))) {
+                if (loop_end(&loops, tape_get(&tape)) == false) {
                     if (fseek(bfsrc, file_ptr - stk_top(&loops), SEEK_CUR)
                             != 0) {
-                        printf("Error in seeking file!");
+                        printf("Error in seeking file!\n");
                         exit(EXIT_FAILURE);
                     }
                 }
@@ -66,9 +69,11 @@ int main(int argc, char **argv) {
         file_ptr++;
     }
     
+    printf("\n");
+    
     /* Cleanup - close */
     if (fclose(bfsrc) != 0) {
-        printf("Error in closing %s!", bfpath);
+        printf("Error in closing %s!\n", bfpath);
         exit(EXIT_FAILURE);
     }
     

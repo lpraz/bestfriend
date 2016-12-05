@@ -41,6 +41,6 @@ bool stk_isempty(Stack *stk);
 void stk_expand(Stack *stk);
 
 /* Frees up the memory occupied by a stack. */
-void stk_Free(Stack *stk);
+void stk_free(Stack *stk);
 
 #endif
