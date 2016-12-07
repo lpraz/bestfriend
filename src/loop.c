@@ -14,27 +14,28 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/* Used at start of loop, returns whether loop should be skipped. */
-bool loop_start(Stack *stk, int cell, int pos) {
-    if (cell != 0) {
-        stk_push(stk, pos);
-        return false;
-    }
+/* Starts a loop. */
+void loop_start(Stack *stk, int cell, int pos) {
+    Loop loop = {pos, false};
     
-    return true;
+    if (cell == 0) 
+        loop.skip = true;
+    
+    stk_push(stk, loop);
 }
 
 /* Used at end of loop, returns whether loop should be repeated. */
 bool loop_end(Stack *stk, int cell) {
-    if (!stk_isempty(stk)) {
-        if (cell = 0) {
+    if (cell == 0) {
+        if (!stk_isempty(stk)) {
             stk_pop(stk);
-            return true;
+        } else {
+            printf("Exception: ']' without matching '['!\n");
+            exit(EXIT_FAILURE);
         }
-    } else {
-        printf("Exception: ']' without matching '['!\n");
-        exit(EXIT_FAILURE);
+        
+        return false;
     }
     
-    return false;
+    return true;
 }

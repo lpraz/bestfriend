@@ -83,7 +83,7 @@ int tape_get(Tape *tape) {
     if ((*tape).ptr >= 0 && (*tape).ptr < (*tape).fwdsize)
         return (*tape).fwd[(*tape).ptr];
     else if ((*tape).ptr < 0 && 1 - (*tape).ptr >= (*tape).revsize)
-        return (*tape).rev[(*tape).ptr];
+        return (*tape).rev[1 - (*tape).ptr];
     
     return 0;
 }

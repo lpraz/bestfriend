@@ -22,51 +22,59 @@ int main(int argc, char **argv) {
     char *bfpath = "in.bf"; /* TODO: make user-specifiable */
     FILE *bfsrc = fopen(bfpath, "r");
     char cmd;
-    int file_ptr;
+    int file_ptr = 0;
     
     /* Declarations - user interaction */
     char in;
     
+    /* Check if file opened successfully */
     if (bfsrc == NULL) {
         printf("Exception - couldn't open %s!\n", bfpath);
         exit(EXIT_FAILURE);
     }
     
-    while (cmd = fgetc(bfsrc), cmd != EOF) {
+    /* Main program loop */
+    while ((cmd = fgetc(bfsrc)) != EOF) {
         switch(cmd) {
             case '+': /* Increment cell at ptr */
-                tape_inc(&tape, 1);
+                if (stk_isempty(&loops) || !stk_top(&loops).skip)
+                    tape_inc(&tape, 1);
                 break;
             case '-': /* Decrement cell at ptr */
-                tape_dec(&tape, 1);
+                if (stk_isempty(&loops) || !stk_top(&loops).skip)
+                    tape_dec(&tape, 1);
                 break;
             case '>': /* Seek right */
-                tape_seekr(&tape, 1);
+                if (stk_isempty(&loops) || !stk_top(&loops).skip)
+                    tape_seekr(&tape, 1);
                 break;
             case '<': /* Seek left */
-                tape_seekl(&tape, 1);
+                if (stk_isempty(&loops) || !stk_top(&loops).skip)
+                    tape_seekl(&tape, 1);
                 break;
             case '.': /* Output cell as char */
-                printf("%c", (char)tape_get(&tape));
+                if (stk_isempty(&loops) || !stk_top(&loops).skip)
+                    printf("%c", (char)tape_get(&tape));
                 break;
             case ',': /* Input char to cell */
-                tape_set(&tape, getchar());
+                if (stk_isempty(&loops) || !stk_top(&loops).skip)
+                    tape_set(&tape, getchar());
                 break;
             case '[': /* Begin loop, jump to end if cell == 0 */
-                if (loop_start(&loops, tape_get(&tape), file_ptr))
-                    while (cmd = fgetc(bfsrc), cmd != EOF && cmd != ']');
+                loop_start(&loops, tape_get(&tape), file_ptr);
                 break;
             case ']': /* End loop, jump to start if cell != 0 */
-                if (loop_end(&loops, tape_get(&tape)) == false) {
-                    if (fseek(bfsrc, file_ptr - stk_top(&loops), SEEK_CUR)
+                if (loop_end(&loops, tape_get(&tape))) {
+                    if (fseek(bfsrc, stk_top(&loops).start, SEEK_SET)
                             != 0) {
                         printf("Error in seeking file!\n");
                         exit(EXIT_FAILURE);
                     }
+                    file_ptr = stk_top(&loops).start;
                 }
                 break;
-                        
         }
+        printf("%d\n", file_ptr);
         file_ptr++;
     }
     

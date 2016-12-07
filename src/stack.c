@@ -1,10 +1,13 @@
 /*
  * stack.c
- * Provides functions for a stack of ints.
+ * Provides functions for a stack of Loops.
  */
 
 /* Import self */
 #include "stack.h"
+
+/* Local imports */
+#include "loop.h"
 
 /* Stdlib imports */
 #include <stdbool.h>
@@ -13,7 +16,7 @@
 
 /* Initializes a stack of size size with nothing in it. */
 Stack stk_init(int size) {
-    int *new_items = malloc(size * sizeof(int));
+    Loop *new_items = malloc(size * sizeof(Loop));
     
     if (new_items == NULL) {
         printf("Exception in stk_init: unable to get memory!");
@@ -25,12 +28,12 @@ Stack stk_init(int size) {
 }
 
 /* Puts an element on top of the stack. */
-void stk_push(Stack *stk, int el) {
+void stk_push(Stack *stk, Loop el) {
     (*stk).items[(*stk).top++] = el;
 }
 
 /* Returns/removes the topmost element of the stack. */
-int stk_pop(Stack *stk) {
+Loop stk_pop(Stack *stk) {
     if (stk_isempty(stk)) {
         printf("Exception in stk_pop: stack is empty!");
         exit(EXIT_FAILURE);
@@ -40,7 +43,7 @@ int stk_pop(Stack *stk) {
 }
 
 /* Returns (without removing) the topmost element of the stack. */
-int stk_top(Stack *stk) {
+Loop stk_top(Stack *stk) {
     if (stk_isempty(stk)) {
         printf("Exception in stk_top: stack is empty!");
         exit(EXIT_FAILURE);
@@ -61,7 +64,7 @@ bool stk_isempty(Stack *stk) {
 
 /* Expands the stack to twice its size (double-growth). */
 void stk_expand(Stack *stk) {
-    int *new_items = malloc((*stk).size * 2 * sizeof(int));
+    Loop *new_items = malloc((*stk).size * 2 * sizeof(Loop));
     
     if (new_items == NULL) {
         printf("Exception in stk_expand: unable to get memory!");
