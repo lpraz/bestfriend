@@ -41,10 +41,10 @@ void tape_inc(Tape *tape, int val) {
         
         (*tape).fwd[(*tape).ptr] += val;
     } else {
-        while (1 - (*tape).ptr >= (*tape).revsize)
+        while ((-(*tape).ptr - 1) >= (*tape).revsize)
             tape_revgrow(tape);
         
-        (*tape).rev[1 - (*tape).ptr] += val;
+        (*tape).rev[-(*tape).ptr - 1] += val;
     }
 }
 
@@ -56,10 +56,10 @@ void tape_dec(Tape *tape, int val) {
         
         (*tape).fwd[(*tape).ptr] -= val;
     } else {
-        while (1 - (*tape).ptr >= (*tape).revsize)
+        while ((-(*tape).ptr - 1) >= (*tape).revsize)
             tape_revgrow(tape);
         
-        (*tape).rev[1 - (*tape).ptr] += val;
+        (*tape).rev[-(*tape).ptr - 1] += val;
     }
 }
 
@@ -71,10 +71,10 @@ void tape_set(Tape *tape, int val) {
         
         (*tape).fwd[(*tape).ptr] = val;    
     } else {
-        while (1 - (*tape).ptr >= (*tape).revsize)
+        while ((-(*tape).ptr - 1) >= (*tape).revsize)
             tape_revgrow(tape);
         
-        (*tape).rev[1 - (*tape).ptr] = val;
+        (*tape).rev[-(*tape).ptr - 1] = val;
     }
 }
 
@@ -82,8 +82,8 @@ void tape_set(Tape *tape, int val) {
 int tape_get(Tape *tape) {
     if ((*tape).ptr >= 0 && (*tape).ptr < (*tape).fwdsize)
         return (*tape).fwd[(*tape).ptr];
-    else if ((*tape).ptr < 0 && 1 - (*tape).ptr >= (*tape).revsize)
-        return (*tape).rev[1 - (*tape).ptr];
+    else if ((*tape).ptr < 0 && (-(*tape).ptr - 1) < (*tape).revsize)
+        return (*tape).rev[-(*tape).ptr - 1];
     
     return 0;
 }

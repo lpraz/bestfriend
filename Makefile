@@ -30,3 +30,8 @@ $(TARGET): $(OBJECTS)
 # Build objects from source files
 $(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
 	$(CC) -I $(INCLDIR) -c -o $@ $<
+
+# Clean objects
+.PHONY: clean
+clean:
+	rm -f $(BUILDDIR)/*.o
