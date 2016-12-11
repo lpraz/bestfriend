@@ -4,6 +4,7 @@
  */
 
 /* Local imports */
+#include "args.h"
 #include "loop.h"
 #include "stack.h"
 #include "tape.h"
@@ -19,18 +20,24 @@ int main(int argc, char **argv) {
     Stack loops = stk_init(DEFAULT_STACK_SIZE);
     
     /* Declarations - brainfuck file */
-    char *bfpath = "in.bf"; /* TODO: make user-specifiable */
-    FILE *bfsrc = fopen(bfpath, "r");
+    char *bfpath;
+    FILE *bfsrc;
     char cmd;
     int file_ptr = 0;
     
     /* Declarations - user interaction */
     char in;
     
-    /* Check if file opened successfully */
+    /* Get command-line arguments, quit if necessary */
+    if (!args(argc, argv, bfpath))
+        return 0;
+    
+    /* Open file. Did it work? */
+    /* TODO: Make user-definable */
+    bfsrc = fopen("in.bf", "r");
     if (bfsrc == NULL) {
         printf("Exception - couldn't open %s!\n", bfpath);
-        exit(EXIT_FAILURE);
+        return 1;
     }
     
     /* Main program loop */
@@ -74,7 +81,7 @@ int main(int argc, char **argv) {
                 }
                 break;
         }
-        printf("%d\n", file_ptr);
+        printf("%d ", file_ptr);
         file_ptr++;
     }
     
