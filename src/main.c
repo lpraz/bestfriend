@@ -14,6 +14,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/* Debug */
+#include <unistd.h>
+
 int main(int argc, char **argv) {
     /* Declarations - data */
     Tape tape = tape_init();
@@ -46,18 +49,22 @@ int main(int argc, char **argv) {
             case '+': /* Increment cell at ptr */
                 if (stk_isempty(&loops) || !stk_top(&loops).skip)
                     tape_inc(&tape, 1);
+                printf("Up to %d ", tape_get(&tape)); /* Debug */
                 break;
             case '-': /* Decrement cell at ptr */
                 if (stk_isempty(&loops) || !stk_top(&loops).skip)
                     tape_dec(&tape, 1);
+                printf("Down to %d ", tape_get(&tape)); /* Debug */
                 break;
             case '>': /* Seek right */
                 if (stk_isempty(&loops) || !stk_top(&loops).skip)
                     tape_seekr(&tape, 1);
+                printf("Right to %d ", tape.ptr); /* Debug */
                 break;
             case '<': /* Seek left */
                 if (stk_isempty(&loops) || !stk_top(&loops).skip)
                     tape_seekl(&tape, 1);
+                printf("Left to %d ", tape.ptr); /* Debug */
                 break;
             case '.': /* Output cell as char */
                 if (stk_isempty(&loops) || !stk_top(&loops).skip)
@@ -79,9 +86,10 @@ int main(int argc, char **argv) {
                     }
                     file_ptr = stk_top(&loops).start;
                 }
+                sleep(1); /* Debug */
                 break;
         }
-        printf("%d ", file_ptr);
+        printf("%d\n", file_ptr); /* Debug */
         file_ptr++;
     }
     

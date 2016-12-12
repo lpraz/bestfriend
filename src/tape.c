@@ -59,7 +59,7 @@ void tape_dec(Tape *tape, int val) {
         while ((-(*tape).ptr - 1) >= (*tape).revsize)
             tape_revgrow(tape);
         
-        (*tape).rev[-(*tape).ptr - 1] += val;
+        (*tape).rev[-(*tape).ptr - 1] -= val;
     }
 }
 
@@ -90,25 +90,31 @@ int tape_get(Tape *tape) {
 
 /* Grows the right half of the tape (double-growth). */
 void tape_fwdgrow(Tape *tape) {
-    if (realloc((*tape).fwd, 2 * (*tape).fwdsize * sizeof(int)) == NULL) {
+    (*tape).fwd = realloc((*tape).fwd, 2 * (*tape).fwdsize * sizeof(int));
+    
+    if ((*tape).fwd == NULL) {
         printf("Error getting memory in tape_fwdgrow!\n");
         exit(EXIT_FAILURE);
     }
     
     for (int i = (*tape).fwdsize; i < (*tape).fwdsize * 2; i++)
         (*tape).fwd[i] = 0;
+    
     (*tape).fwdsize *= 2;
 }
 
 /* Grows the left half of the tape (double-growth). */
 void tape_revgrow(Tape *tape) {
-    if (realloc((*tape).rev, 2 * (*tape).revsize * sizeof(int)) == NULL) {
+    (*tape).rev = realloc((*tape).rev, 2 * (*tape).revsize * sizeof(int));
+    
+    if ((*tape).rev == NULL) {
         printf("Error getting memory in tape_revgrow!\n");
         exit(EXIT_FAILURE);
     }
     
     for (int i = (*tape).revsize; i < (*tape).revsize * 2; i++)
         (*tape).rev[i] = 0;
+    
     (*tape).revsize *= 2;
 }
 
