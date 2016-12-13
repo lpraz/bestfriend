@@ -13,7 +13,7 @@
 
 /* Processes arguments, returns whether the program should continue. */
 /* TODO: Make more capable as more interpreter features added */
-bool args(int argc, char *argv[], char *bfpath) {
+bool args(int argc, char **argv, char *bfpath) {
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--version") == 0) {
             printf("BestFriend brainfuck interpreter\n");
@@ -21,6 +21,6 @@ bool args(int argc, char *argv[], char *bfpath) {
         }
     }
     
-    bfpath = argv[1];
+    strcpy(bfpath, argv[1]);
     return true;
 }

@@ -4,7 +4,7 @@
 
 # Compiler options
 CC = gcc
-#CFLAGS = 
+CFLAGS = -std=c99
 
 # Directories
 SRCDIR = src
@@ -29,7 +29,7 @@ $(TARGET): $(OBJECTS)
 
 # Build objects from source files
 $(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
-	$(CC) -I $(INCLDIR) -c -o $@ $<
+	$(CC) $(CFLAGS) -I $(INCLDIR) -c -o $@ $<
 
 # Clean objects
 .PHONY: clean

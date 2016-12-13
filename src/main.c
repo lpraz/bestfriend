@@ -15,18 +15,19 @@
 #include <stdlib.h>
 
 /* Debug */
-#include <unistd.h>
+//#include <unistd.h>
 
+/* Contains the main program loop, performs I/O, etc. */
 int main(int argc, char **argv) {
     /* Declarations - data */
     Tape tape = tape_init();
     Stack loops = stk_init(DEFAULT_STACK_SIZE);
     
     /* Declarations - brainfuck file */
-    char *bfpath;
+    char *bfpath = malloc(256 * sizeof(char));
     FILE *bfsrc;
     char cmd;
-    int file_ptr = 0;
+    int file_ptr = 1;
     
     /* Declarations - user interaction */
     char in;
@@ -36,8 +37,7 @@ int main(int argc, char **argv) {
         return 0;
     
     /* Open file. Did it work? */
-    /* TODO: Make user-definable */
-    bfsrc = fopen("in.bf", "r");
+    bfsrc = fopen(bfpath, "r");
     if (bfsrc == NULL) {
         printf("Exception - couldn't open %s!\n", bfpath);
         return 1;
@@ -49,22 +49,22 @@ int main(int argc, char **argv) {
             case '+': /* Increment cell at ptr */
                 if (stk_isempty(&loops) || !stk_top(&loops).skip)
                     tape_inc(&tape, 1);
-                printf("Up to %d ", tape_get(&tape)); /* Debug */
+                //printf("Up to %d ", tape_get(&tape)); /* Debug */
                 break;
             case '-': /* Decrement cell at ptr */
                 if (stk_isempty(&loops) || !stk_top(&loops).skip)
                     tape_dec(&tape, 1);
-                printf("Down to %d ", tape_get(&tape)); /* Debug */
+                //printf("Down to %d ", tape_get(&tape)); /* Debug */
                 break;
             case '>': /* Seek right */
                 if (stk_isempty(&loops) || !stk_top(&loops).skip)
                     tape_seekr(&tape, 1);
-                printf("Right to %d ", tape.ptr); /* Debug */
+                //printf("Right to %d ", tape.ptr); /* Debug */
                 break;
             case '<': /* Seek left */
                 if (stk_isempty(&loops) || !stk_top(&loops).skip)
                     tape_seekl(&tape, 1);
-                printf("Left to %d ", tape.ptr); /* Debug */
+                //printf("Left to %d ", tape.ptr); /* Debug */
                 break;
             case '.': /* Output cell as char */
                 if (stk_isempty(&loops) || !stk_top(&loops).skip)
@@ -76,9 +76,11 @@ int main(int argc, char **argv) {
                 break;
             case '[': /* Begin loop, jump to end if cell == 0 */
                 loop_start(&loops, tape_get(&tape), file_ptr);
+                //printf("Began loop at %d ", stk_top(&loops).start);
                 break;
             case ']': /* End loop, jump to start if cell != 0 */
                 if (loop_end(&loops, tape_get(&tape))) {
+                    //printf("Looped, back to %d ", stk_top(&loops).start);
                     if (fseek(bfsrc, stk_top(&loops).start, SEEK_SET)
                             != 0) {
                         printf("Error in seeking file!\n");
@@ -86,14 +88,12 @@ int main(int argc, char **argv) {
                     }
                     file_ptr = stk_top(&loops).start;
                 }
-                sleep(1); /* Debug */
+                //sleep(1); /* Debug */
                 break;
         }
-        printf("%d\n", file_ptr); /* Debug */
+        //printf("%d\n", file_ptr); /* Debug */
         file_ptr++;
     }
-    
-    printf("\n");
     
     /* Cleanup - close */
     if (fclose(bfsrc) != 0) {
@@ -104,6 +104,7 @@ int main(int argc, char **argv) {
     /* Cleanup - free memory */
     stk_free(&loops);
     tape_free(&tape);
+    free(bfpath);
     
     return 0;
 }
