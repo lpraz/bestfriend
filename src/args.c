@@ -18,9 +18,15 @@ bool args(int argc, char **argv, char *bfpath) {
         if (strcmp(argv[i], "--version") == 0) {
             printf("BestFriend brainfuck interpreter\n");
             return false;
+        } else if (strcmp(argv[i], "--help") == 0) {
+            printf("Usage: bestfriend [FILE]\n");
+            printf("Runs FILE as a brainfuck program.\n");
+            printf("If multiple FILEs are given, the last will be run.\n"); 
+            return false;
+        } else {
+            strcpy(bfpath, argv[i]);
         }
     }
     
-    strcpy(bfpath, argv[1]);
     return true;
 }
