@@ -7,21 +7,27 @@
 #ifndef TAPE_H
 #define TAPE_H
 
-/* Constants */
-#define DEFAULT_FORWARD_SIZE 2
-#define DEFAULT_REVERSE_SIZE 1
+/* Constants - default tape size */
+#define DEFAULT_FWDSIZE 2
+#define DEFAULT_REVSIZE 1
+
+/* Constants - cell width flags */
+#define INT32_T 1
+#define INT16_T 2
+#define INT8_T 3
 
 /* Structure */
 typedef struct Tape {
     int ptr;
-    int *fwd;
-    int *rev;
+    void *fwd;
+    void *rev;
     int fwdsize;
     int revsize;
+    int cwidth;
 } Tape;
 
 /* Initializes a tape. */
-Tape tape_init();
+Tape tape_init(int cwidth);
 
 /* Seeks the tape's pointer dist cells to the left. */
 void tape_seekl(Tape *tape, int dist);

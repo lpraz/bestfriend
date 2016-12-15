@@ -14,13 +14,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/* Debug */
-
 /* Contains the main program loop, performs I/O, etc. */
 int main(int argc, char **argv) {
-    /* Declarations - data */
-    Tape tape = tape_init();
+    /* Declarations - environment */
+    Tape tape;
     Stack loops = stk_init(DEFAULT_STACK_SIZE);
+    int cwidth;
     
     /* Declarations - brainfuck file */
     char *bfpath = malloc(256 * sizeof(char));
@@ -31,11 +30,16 @@ int main(int argc, char **argv) {
     /* Declarations - user interaction */
     char in;
     
-    
     /* Get command-line arguments, quit if necessary */
     bfpath[0] = '\0';
-    if (!args(argc, argv, bfpath))
-        return 0;
+    if (!args(argc, argv, bfpath, &cwidth))
+        return EXIT_SUCCESS;
+    
+    /* Set up the tape */
+    if (cwidth == 0)
+        cwidth = INT32_T;
+    
+    tape = tape_init(cwidth);
     
     /* Open file. Did it work? */
     if (bfpath[0] == '\0') {
@@ -46,7 +50,7 @@ int main(int argc, char **argv) {
     bfsrc = fopen(bfpath, "r");
     
     if (bfsrc == NULL) {
-        printf("Exception - couldn't open %s!\n", bfpath);
+        printf("Error - couldn't open %s!\n", bfpath);
         return 1;
     }
     
@@ -105,5 +109,5 @@ int main(int argc, char **argv) {
     tape_free(&tape);
     free(bfpath);
     
-    return 0;
+    return EXIT_SUCCESS;
 }

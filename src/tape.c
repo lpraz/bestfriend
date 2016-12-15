@@ -1,20 +1,45 @@
 /*
  * tape.c
  * Provides methods for a Brainfuck tape of ints made using an array.
+ * TODO: Fix the remaining void pointer problems
  */
 
 /* Import self */
 #include "tape.h"
 
 /* Stdlib imports */
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 /* Initializes a tape. */
-Tape tape_init() {
-    int *fwd = (int*)calloc(DEFAULT_FORWARD_SIZE, sizeof(int));
-    int *rev = (int*)calloc(DEFAULT_REVERSE_SIZE, sizeof(int));
-    Tape tape = {0, fwd, rev, DEFAULT_FORWARD_SIZE, DEFAULT_REVERSE_SIZE};
+Tape tape_init(int cwidth) {
+    void *fwd, *rev;
+    
+    switch (cwidth) {
+        case INT32_T:
+            fwd = (int32_t*)calloc(DEFAULT_FWDSIZE, sizeof(int32_t));
+            rev = (int32_t*)calloc(DEFAULT_REVSIZE, sizeof(int32_t));
+            break;
+        case INT16_T:
+            fwd = (int16_t*)calloc(DEFAULT_FWDSIZE, sizeof(int16_t));
+            rev = (int16_t*)calloc(DEFAULT_REVSIZE, sizeof(int16_t));
+            break;
+        case INT8_T:
+            fwd = (int8_t*)calloc(DEFAULT_FWDSIZE, sizeof(int8_t));
+            rev = (int8_t*)calloc(DEFAULT_REVSIZE, sizeof(int8_t));
+            break;
+    }
+    
+    Tape tape = {
+        0,
+        fwd,
+        rev,
+        DEFAULT_FWDSIZE,
+        DEFAULT_REVSIZE,
+        cwidth
+    };
+    
     return tape;
 }
 
@@ -39,7 +64,17 @@ void tape_inc(Tape *tape, int val) {
         while ((*tape).ptr >= (*tape).fwdsize)
             tape_fwdgrow(tape);
         
-        (*tape).fwd[(*tape).ptr] += val;
+        switch ((*tape).cwidth) {
+            case INT32_T:
+                (*tape).fwd[(*tape).ptr] += val;
+                break;
+            case INT16_T:
+                (*tape).fwd[(*tape).ptr] += val;
+                break;
+            case INT8_T:
+                (*tape).fwd[(*tape).ptr] += val;
+                break;
+        }
     } else {
         while ((-(*tape).ptr - 1) >= (*tape).revsize)
             tape_revgrow(tape);
@@ -54,7 +89,17 @@ void tape_dec(Tape *tape, int val) {
         while ((*tape).ptr >= (*tape).fwdsize)
             tape_fwdgrow(tape);
         
-        (*tape).fwd[(*tape).ptr] -= val;
+        switch ((*tape).cwidth) {
+            case INT32_T:
+                (*tape).fwd[(*tape).ptr] -= val;
+                break;
+            case INT16_T:
+                (*tape).fwd[(*tape).ptr] -= val;
+                break;
+            case INT8_T:
+                (*tape).fwd[(*tape).ptr] -= val;
+                break;
+        }
     } else {
         while ((-(*tape).ptr - 1) >= (*tape).revsize)
             tape_revgrow(tape);
@@ -90,30 +135,92 @@ int tape_get(Tape *tape) {
 
 /* Grows the right half of the tape (double-growth). */
 void tape_fwdgrow(Tape *tape) {
-    (*tape).fwd = realloc((*tape).fwd, 2 * (*tape).fwdsize * sizeof(int));
+    switch((*tape).cwidth) {
+        case INT32_T:
+            (*tape).fwd = realloc(
+                (*tape).fwd,
+                2 * (*tape).fwdsize * sizeof(int32_t)
+            );
+            break;
+        case INT16_T:
+            (*tape).fwd = realloc(
+                (*tape).fwd,
+                2 * (*tape).fwdsize * sizeof(int16_t)
+            );
+            break;
+        case INT8_T:
+            (*tape).fwd = realloc(
+                (*tape).fwd,
+                2 * (*tape).fwdsize * sizeof(int8_t)
+            );
+            break;
+    }
     
     if ((*tape).fwd == NULL) {
         printf("Error getting memory in tape_fwdgrow!\n");
         exit(EXIT_FAILURE);
     }
     
-    for (int i = (*tape).fwdsize; i < (*tape).fwdsize * 2; i++)
-        (*tape).fwd[i] = 0;
+    switch ((*tape).cwidth) {
+        case INT32_T:
+            for (int i = (*tape).fwdsize; i < (*tape).fwdsize * 2; i++)
+                ((int32_t*)((*tape).fwd))[i] = 0;
+            break;
+        case INT16_T:
+            for (int i = (*tape).fwdsize; i < (*tape).fwdsize * 2; i++)
+                ((int16_t*)((*tape).fwd))[i] = 0;
+            break;
+        case INT8_T:
+            for (int i = (*tape).fwdsize; i < (*tape).fwdsize * 2; i++)
+                ((int8_t*)((*tape).fwd))[i] = 0;
+            break;
+    }
     
     (*tape).fwdsize *= 2;
 }
 
 /* Grows the left half of the tape (double-growth). */
 void tape_revgrow(Tape *tape) {
-    (*tape).rev = realloc((*tape).rev, 2 * (*tape).revsize * sizeof(int));
+    switch ((*tape).cwidth) {
+        case INT32_T:
+            (*tape).rev = realloc(
+                (*tape).rev,
+                2 * (*tape).revsize * sizeof(int32_t)
+            );
+            break;
+        case INT16_T:
+            (*tape).rev = realloc(
+                (*tape).rev,
+                2 * (*tape).revsize * sizeof(int16_t)
+            );
+            break;
+        case INT8_T:
+            (*tape).rev = realloc(
+                (*tape).rev,
+                2 * (*tape).revsize * sizeof(int8_t)
+            );
+            break;
+    }
     
     if ((*tape).rev == NULL) {
         printf("Error getting memory in tape_revgrow!\n");
         exit(EXIT_FAILURE);
     }
     
-    for (int i = (*tape).revsize; i < (*tape).revsize * 2; i++)
-        (*tape).rev[i] = 0;
+    switch ((*tape).cwidth) {
+        case INT32_T:
+            for (int i = (*tape).revsize; i < (*tape).revsize * 2; i++)
+                ((int32_t*)((*tape).rev))[i] = 0;
+            break;
+        case INT16_T:
+            for (int i = (*tape).revsize; i < (*tape).revsize * 2; i++)
+                ((int16_t*)((*tape).rev))[i] = 0;
+            break;
+        case INT8_T:
+            for (int i = (*tape).revsize; i < (*tape).revsize * 2; i++)
+                ((int8_t*)((*tape).rev))[i] = 0;
+            break;
+    }
     
     (*tape).revsize *= 2;
 }
