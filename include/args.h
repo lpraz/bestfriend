@@ -10,6 +10,6 @@
 #include <stdbool.h>
 
 /* Processes arguments, returns whether the program should continue. */
-bool args(int argc, char *argv[], char *bfpath);
+bool args(int argc, char **argv, char *bfpath, int *cwidth);
 
 #endif

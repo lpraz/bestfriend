@@ -66,20 +66,30 @@ void tape_inc(Tape *tape, int val) {
         
         switch ((*tape).cwidth) {
             case INT32_T:
-                (*tape).fwd[(*tape).ptr] += val;
+                ((int32_t*)(*tape).fwd)[(*tape).ptr] += val;
                 break;
             case INT16_T:
-                (*tape).fwd[(*tape).ptr] += val;
+                ((int16_t*)(*tape).fwd)[(*tape).ptr] += val;
                 break;
             case INT8_T:
-                (*tape).fwd[(*tape).ptr] += val;
+                ((int8_t*)(*tape).fwd)[(*tape).ptr] += val;
                 break;
         }
     } else {
         while ((-(*tape).ptr - 1) >= (*tape).revsize)
             tape_revgrow(tape);
         
-        (*tape).rev[-(*tape).ptr - 1] += val;
+        switch ((*tape).cwidth) {
+            case INT32_T:
+                ((int32_t*)(*tape).rev)[-(*tape).ptr - 1] += val;
+                break;
+            case INT16_T:
+                ((int16_t*)(*tape).rev)[-(*tape).ptr - 1] += val;
+                break;
+            case INT8_T:
+                ((int8_t*)(*tape).rev)[-(*tape).ptr - 1] += val;
+                break;
+        }
     }
 }
 
@@ -91,20 +101,30 @@ void tape_dec(Tape *tape, int val) {
         
         switch ((*tape).cwidth) {
             case INT32_T:
-                (*tape).fwd[(*tape).ptr] -= val;
+                ((int32_t*)(*tape).fwd)[(*tape).ptr] -= val;
                 break;
             case INT16_T:
-                (*tape).fwd[(*tape).ptr] -= val;
+                ((int16_t*)(*tape).fwd)[(*tape).ptr] -= val;
                 break;
             case INT8_T:
-                (*tape).fwd[(*tape).ptr] -= val;
+                ((int8_t*)(*tape).fwd)[(*tape).ptr] -= val;
                 break;
         }
     } else {
         while ((-(*tape).ptr - 1) >= (*tape).revsize)
             tape_revgrow(tape);
         
-        (*tape).rev[-(*tape).ptr - 1] -= val;
+        switch ((*tape).cwidth) {
+            case INT32_T:
+                ((int32_t*)(*tape).rev)[-(*tape).ptr - 1] -= val;
+                break;
+            case INT16_T:
+                ((int16_t*)(*tape).rev)[-(*tape).ptr - 1] -= val;
+                break;
+            case INT8_T:
+                ((int8_t*)(*tape).rev)[-(*tape).ptr - 1] -= val;
+                break;
+        }
     }
 }
 
@@ -114,21 +134,60 @@ void tape_set(Tape *tape, int val) {
         while ((*tape).ptr >= (*tape).fwdsize)
             tape_fwdgrow(tape);
         
-        (*tape).fwd[(*tape).ptr] = val;    
+        switch ((*tape).cwidth) {
+            case INT32_T:
+                ((int32_t*)(*tape).fwd)[(*tape).ptr] = val;
+                break;
+            case INT16_T:
+                ((int16_t*)(*tape).fwd)[(*tape).ptr] = val;
+                break;
+            case INT8_T:
+                ((int8_t*)(*tape).fwd)[(*tape).ptr] = val;
+                break;
+        }
     } else {
         while ((-(*tape).ptr - 1) >= (*tape).revsize)
             tape_revgrow(tape);
         
-        (*tape).rev[-(*tape).ptr - 1] = val;
+        switch ((*tape).cwidth) {
+            case INT32_T:
+                ((int32_t*)(*tape).rev)[-(*tape).ptr - 1] = val;
+                break;
+            case INT16_T:
+                ((int16_t*)(*tape).rev)[-(*tape).ptr - 1] = val;
+                break;
+            case INT8_T:
+                ((int8_t*)(*tape).rev)[-(*tape).ptr - 1] = val;
+                break;
+        }
     }
 }
 
 /* Returns the value of the cell at the tape's pointer. */
 int tape_get(Tape *tape) {
     if ((*tape).ptr >= 0 && (*tape).ptr < (*tape).fwdsize)
-        return (*tape).fwd[(*tape).ptr];
+        switch ((*tape).cwidth) {
+            case INT32_T:
+                return (int)(((int32_t*)(*tape).fwd)[(*tape).ptr]);
+                break;
+            case INT16_T:
+                return (int)(((int16_t*)(*tape).fwd)[(*tape).ptr]);
+                break;
+            case INT8_T:
+                return (int)(((int8_t*)(*tape).fwd)[(*tape).ptr]);
+        }
     else if ((*tape).ptr < 0 && (-(*tape).ptr - 1) < (*tape).revsize)
-        return (*tape).rev[-(*tape).ptr - 1];
+        switch ((*tape).cwidth) {
+            case INT32_T:
+                return (int)(((int32_t*)(*tape).rev)[-(*tape).ptr - 1]);
+                break;
+            case INT16_T:
+                return (int)(((int16_t*)(*tape).rev)[-(*tape).ptr - 1]);
+                break;
+            case INT8_T:
+                return (int)(((int8_t*)(*tape).rev)[-(*tape).ptr - 1]);
+                break;
+        }
     
     return 0;
 }

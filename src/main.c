@@ -36,7 +36,7 @@ int main(int argc, char **argv) {
         return EXIT_SUCCESS;
     
     /* Set up the tape */
-    if (cwidth == 0)
+    if (cwidth != INT32_T || cwidth != INT16_T || cwidth != INT8_T)
         cwidth = INT32_T;
     
     tape = tape_init(cwidth);
