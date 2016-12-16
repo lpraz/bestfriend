@@ -1,11 +1,13 @@
 /*
  * tape.c
  * Provides methods for a Brainfuck tape of ints made using an array.
- * TODO: Fix the remaining void pointer problems
  */
 
 /* Import self */
 #include "tape.h"
+
+/* Local imports */
+#include "except.h"
 
 /* Stdlib imports */
 #include <inttypes.h>
@@ -215,10 +217,8 @@ void tape_fwdgrow(Tape *tape) {
             break;
     }
     
-    if ((*tape).fwd == NULL) {
-        printf("Error getting memory in tape_fwdgrow!\n");
-        exit(EXIT_FAILURE);
-    }
+    if ((*tape).fwd == NULL)
+        error("Unable to get memory when growing forward part of tape");
     
     switch ((*tape).cwidth) {
         case INT32_T:
@@ -261,10 +261,8 @@ void tape_revgrow(Tape *tape) {
             break;
     }
     
-    if ((*tape).rev == NULL) {
-        printf("Error getting memory in tape_revgrow!\n");
-        exit(EXIT_FAILURE);
-    }
+    if ((*tape).rev == NULL)
+        error("Unable to get memory when growing reverse part of tape");
     
     switch ((*tape).cwidth) {
         case INT32_T:

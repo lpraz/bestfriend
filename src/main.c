@@ -5,6 +5,7 @@
 
 /* Local imports */
 #include "args.h"
+#include "except.h"
 #include "loop.h"
 #include "stack.h"
 #include "tape.h"
@@ -42,17 +43,13 @@ int main(int argc, char **argv) {
     tape = tape_init(cwidth);
     
     /* Open file. Did it work? */
-    if (bfpath[0] == '\0') {
-        printf("No file specified - exiting...\n");
-        return 1;
-    }
+    if (bfpath[0] == '\0')
+        except("No file specified");
     
     bfsrc = fopen(bfpath, "r");
     
-    if (bfsrc == NULL) {
-        printf("Error - couldn't open %s!\n", bfpath);
-        return 1;
-    }
+    if (bfsrc == NULL)
+        except("Couldn't open file");
     
     /* Main program loop */
     while ((cmd = fgetc(bfsrc)) != EOF) {
@@ -87,10 +84,9 @@ int main(int argc, char **argv) {
             case ']': /* End loop, jump to start if cell != 0 */
                 if (loop_end(&loops, tape_get(&tape))) {
                     if (fseek(bfsrc, stk_top(&loops).start, SEEK_SET)
-                            != 0) {
-                        printf("Error in seeking file!\n");
-                        exit(EXIT_FAILURE);
-                    }
+                            != 0)
+                        error("Couldn't seek file");
+                    
                     file_ptr = stk_top(&loops).start;
                 }
                 break;
@@ -98,11 +94,13 @@ int main(int argc, char **argv) {
         file_ptr++;
     }
     
+    /* Cleanup - check that stack is empty */
+    if (!stk_isempty(&loops))
+        except("'[' with no matching ']'");
+    
     /* Cleanup - close */
-    if (fclose(bfsrc) != 0) {
-        printf("Error in closing %s!\n", bfpath);
-        exit(EXIT_FAILURE);
-    }
+    if (fclose(bfsrc) != 0)
+        error("Couldn't close file");
     
     /* Cleanup - free memory */
     stk_free(&loops);

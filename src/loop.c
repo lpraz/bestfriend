@@ -7,6 +7,7 @@
 #include "loop.h"
 
 /* Local imports */
+#include "except.h"
 #include "stack.h"
 
 /* Stdlib imports */
@@ -27,12 +28,10 @@ void loop_start(Stack *stk, int cell, int pos) {
 /* Used at end of loop, returns whether loop should be repeated. */
 bool loop_end(Stack *stk, int cell) {
     if (cell == 0) {
-        if (!stk_isempty(stk)) {
+        if (!stk_isempty(stk))
             stk_pop(stk);
-        } else {
-            printf("Exception: ']' without matching '['!\n");
-            exit(EXIT_FAILURE);
-        }
+        else
+            except("']' without matching '['");
         
         return false;
     }

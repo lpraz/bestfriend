@@ -7,6 +7,7 @@
 #include "stack.h"
 
 /* Local imports */
+#include "except.h"
 #include "loop.h"
 
 /* Stdlib imports */
@@ -18,10 +19,8 @@
 Stack stk_init(int size) {
     Loop *new_items = malloc(size * sizeof(Loop));
     
-    if (new_items == NULL) {
-        printf("Exception in stk_init: unable to get memory!");
-        exit(EXIT_FAILURE);
-    }
+    if (new_items == NULL)
+        error("Unable to get memory while initializing stack");
     
     Stack stk = {new_items, size, 0};
     return stk;
@@ -34,20 +33,16 @@ void stk_push(Stack *stk, Loop el) {
 
 /* Returns/removes the topmost element of the stack. */
 Loop stk_pop(Stack *stk) {
-    if (stk_isempty(stk)) {
-        printf("Exception in stk_pop: stack is empty!");
-        exit(EXIT_FAILURE);
-    }
+    if (stk_isempty(stk))
+        error("Tried to pop from an empty stack");
     
     return (*stk).items[--(*stk).top];
 }
 
 /* Returns (without removing) the topmost element of the stack. */
 Loop stk_top(Stack *stk) {
-    if (stk_isempty(stk)) {
-        printf("Exception in stk_top: stack is empty!");
-        exit(EXIT_FAILURE);
-    }
+    if (stk_isempty(stk))
+        error("Tried to get top element of empty stack");
     
     return (*stk).items[(*stk).top - 1];
 }
@@ -66,10 +61,8 @@ bool stk_isempty(Stack *stk) {
 void stk_expand(Stack *stk) {
     Loop *new_items = malloc((*stk).size * 2 * sizeof(Loop));
     
-    if (new_items == NULL) {
-        printf("Exception in stk_expand: unable to get memory!");
-        exit(EXIT_FAILURE);
-    }
+    if (new_items == NULL)
+        error("Unable to get memory when expanding stack");
         
     for (int i = 0; i < (*stk).size; i++)
         new_items[i] = (*stk).items[i];
