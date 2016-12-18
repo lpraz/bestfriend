@@ -16,7 +16,7 @@
 
 /* Processes arguments, returns whether the program should continue. */
 /* TODO: Make more capable as more interpreter features added */
-bool args(int argc, char **argv, char *bfpath, int *cwidth) {
+bool args(int argc, char **argv, char *bfpath, int *cwidth, char *eofval) {
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--version") == 0) {
             printf("BestFriend brainfuck interpreter\n");
@@ -35,6 +35,16 @@ bool args(int argc, char **argv, char *bfpath, int *cwidth) {
                 *cwidth = INT8_T;
             } else {
                 printf("Invalid cell width, defaulting to 32-bit.\n");
+            }
+        } else if (strncmp(argv[i], "--eof=", 6) == 0) {
+            if (strcmp(argv[i], "--eof=-1") == 0) {
+                *eofval = -1;
+            } else if (strcmp(argv[i], "--eof=0") == 0) {
+                *eofval = 0;
+            } else if (strcmp(argv[i], "--eof=nochg") == 0) {
+                *eofval = EOF_NO_CHANGE;
+            } else {
+                printf("Invalid EOF behaviour, defaulting to -1.\n");
             }
         } else {
             strcpy(bfpath, argv[i]);

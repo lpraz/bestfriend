@@ -9,7 +9,10 @@
 /* Stdlib imports */
 #include <stdbool.h>
 
+/* Constants */
+#define EOF_NO_CHANGE 1
+
 /* Processes arguments, returns whether the program should continue. */
-bool args(int argc, char **argv, char *bfpath, int *cwidth);
+bool args(int argc, char **argv, char *bfpath, int *cwidth, char *eofval);
 
 #endif

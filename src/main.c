@@ -20,7 +20,8 @@ int main(int argc, char **argv) {
     /* Declarations - environment */
     Tape tape;
     Stack loops = stk_init(DEFAULT_STACK_SIZE);
-    int cwidth;
+    int cwidth = INT32_T;
+    char eofval = -1;
     
     /* Declarations - brainfuck file */
     char *bfpath = malloc(256 * sizeof(char));
@@ -33,13 +34,10 @@ int main(int argc, char **argv) {
     
     /* Get command-line arguments, quit if necessary */
     bfpath[0] = '\0';
-    if (!args(argc, argv, bfpath, &cwidth))
+    if (!args(argc, argv, bfpath, &cwidth, &eofval))
         return EXIT_SUCCESS;
     
-    /* Set up the tape */
-    if (cwidth != INT32_T || cwidth != INT16_T || cwidth != INT8_T)
-        cwidth = INT32_T;
-    
+    /* Set up tape */
     tape = tape_init(cwidth);
     
     /* Open file. Did it work? */
@@ -75,8 +73,14 @@ int main(int argc, char **argv) {
                     printf("%c", (char)tape_get(&tape));
                 break;
             case ',': /* Input char to cell */
-                if (stk_isempty(&loops) || !stk_top(&loops).skip)
-                    tape_set(&tape, getchar());
+                if (stk_isempty(&loops) || !stk_top(&loops).skip) {
+                    in = getchar();
+                    if (in == EOF && eofval != EOF_NO_CHANGE) {
+                        tape_set(&tape, eofval);
+                    } else {
+                        tape_set(&tape, in);
+                    }
+                }
                 break;
             case '[': /* Begin loop, jump to end if cell == 0 */
                 loop_start(&loops, tape_get(&tape), file_ptr);
