@@ -19,6 +19,9 @@
 #define INT16_T 2
 #define INT8_T 3
 
+/* Constants - predefined tape bounds */
+#define INFINITE -1
+
 /* Structure */
 typedef struct Tape {
     int ptr;
@@ -28,10 +31,12 @@ typedef struct Tape {
     int revsize;
     int cwidth;
     bool wrap;
+    int max_fwdsize;
+    int max_revsize;
 } Tape;
 
 /* Initializes a tape. */
-Tape tape_init(int cwidth, bool wrap);
+Tape tape_init(int cwidth, bool wrap, int max_fwdsize, int max_revsize);
 
 /* Seeks the tape's pointer dist cells to the left. */
 void tape_seekl(Tape *tape, int dist);

@@ -14,6 +14,6 @@
 
 /* Processes arguments, returns whether the program should continue. */
 bool args(int argc, char **argv, char *bfpath, int *cwidth, char *eofval,
-          bool *wrap);
+          bool *wrap, int *max_fwdsize, int *max_revsize);
 
 #endif

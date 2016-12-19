@@ -16,7 +16,7 @@
 #include <stdlib.h>
 
 /* Initializes a tape. */
-Tape tape_init(int cwidth, bool wrap) {
+Tape tape_init(int cwidth, bool wrap, int max_fwdsize, int max_revsize) {
     void *fwd, *rev;
     
     switch (cwidth) {
@@ -41,7 +41,9 @@ Tape tape_init(int cwidth, bool wrap) {
         DEFAULT_FWDSIZE,
         DEFAULT_REVSIZE,
         cwidth,
-        wrap
+        wrap,
+        max_fwdsize,
+        max_revsize
     };
     
     return tape;
@@ -49,17 +51,30 @@ Tape tape_init(int cwidth, bool wrap) {
 
 /* Seeks the tape's pointer dist cells to the left. */
 void tape_seekl(Tape *tape, int dist) {
-    (*tape).ptr -= dist;
+    if ((*tape).max_revsize == INFINITE
+            || (*tape).ptr - dist > -(*tape).max_revsize)
+        (*tape).ptr -= dist;
+    else
+        except("Seeked left to a cell that is out of bounds");
 }
 
 /* Seeks the tape's pointer dist cells to the right. */
 void tape_seekr(Tape *tape, int dist) {
-    (*tape).ptr += dist;
+    if ((*tape).max_fwdsize == INFINITE
+            || (*tape).ptr + dist < (*tape).max_fwdsize)
+        (*tape).ptr += dist;
+    else
+        except("Seeked right to a cell that is out of bounds");
 }
 
 /* Seeks the tape pointer to pos. */
 void tape_seeks(Tape *tape, int pos) {
-    (*tape).ptr = pos;
+    if ((*tape).max_revsize == INFINITE && pos < 0
+            || (*tape).max_fwdsize == INFINITE && pos >= 0
+            || pos <= (*tape).max_fwdsize && pos >= (*tape).max_revsize)
+        (*tape).ptr = pos;
+    else
+        except("Seeked to a cell that is out of bounds");
 }
 
 /* Increments the cell at the tape's pointer by val. */
@@ -258,23 +273,31 @@ int tape_get(Tape *tape) {
 
 /* Grows the right half of the tape (double-growth). */
 void tape_fwdgrow(Tape *tape) {
+    int new_fwdsize;
+    
+    if ((*tape).max_fwdsize == INFINITE
+            || (*tape).fwdsize * 2 <= (*tape).max_fwdsize)
+        new_fwdsize = (*tape).fwdsize * 2;
+    else
+        new_fwdsize = (*tape).max_fwdsize;
+    
     switch((*tape).cwidth) {
         case INT32_T:
             (*tape).fwd = realloc(
                 (*tape).fwd,
-                2 * (*tape).fwdsize * sizeof(int32_t)
+                new_fwdsize * sizeof(int32_t)
             );
             break;
         case INT16_T:
             (*tape).fwd = realloc(
                 (*tape).fwd,
-                2 * (*tape).fwdsize * sizeof(int16_t)
+                new_fwdsize * sizeof(int16_t)
             );
             break;
         case INT8_T:
             (*tape).fwd = realloc(
                 (*tape).fwd,
-                2 * (*tape).fwdsize * sizeof(int8_t)
+                new_fwdsize * sizeof(int8_t)
             );
             break;
     }
@@ -284,41 +307,49 @@ void tape_fwdgrow(Tape *tape) {
     
     switch ((*tape).cwidth) {
         case INT32_T:
-            for (int i = (*tape).fwdsize; i < (*tape).fwdsize * 2; i++)
+            for (int i = (*tape).fwdsize; i < new_fwdsize; i++)
                 ((int32_t*)((*tape).fwd))[i] = 0;
             break;
         case INT16_T:
-            for (int i = (*tape).fwdsize; i < (*tape).fwdsize * 2; i++)
+            for (int i = (*tape).fwdsize; i < new_fwdsize; i++)
                 ((int16_t*)((*tape).fwd))[i] = 0;
             break;
         case INT8_T:
-            for (int i = (*tape).fwdsize; i < (*tape).fwdsize * 2; i++)
+            for (int i = (*tape).fwdsize; i < new_fwdsize; i++)
                 ((int8_t*)((*tape).fwd))[i] = 0;
             break;
     }
     
-    (*tape).fwdsize *= 2;
+    (*tape).fwdsize = new_fwdsize;
 }
 
 /* Grows the left half of the tape (double-growth). */
 void tape_revgrow(Tape *tape) {
+    int new_revsize;
+    
+    if ((*tape).max_revsize == INFINITE
+            || (*tape).revsize * 2 <= (*tape).max_revsize)
+        new_revsize = (*tape).revsize * 2;
+    else
+        new_revsize = (*tape).revsize * 2;
+    
     switch ((*tape).cwidth) {
         case INT32_T:
             (*tape).rev = realloc(
                 (*tape).rev,
-                2 * (*tape).revsize * sizeof(int32_t)
+                new_revsize * sizeof(int32_t)
             );
             break;
         case INT16_T:
             (*tape).rev = realloc(
                 (*tape).rev,
-                2 * (*tape).revsize * sizeof(int16_t)
+                new_revsize * sizeof(int16_t)
             );
             break;
         case INT8_T:
             (*tape).rev = realloc(
                 (*tape).rev,
-                2 * (*tape).revsize * sizeof(int8_t)
+                new_revsize * sizeof(int8_t)
             );
             break;
     }
@@ -328,20 +359,20 @@ void tape_revgrow(Tape *tape) {
     
     switch ((*tape).cwidth) {
         case INT32_T:
-            for (int i = (*tape).revsize; i < (*tape).revsize * 2; i++)
+            for (int i = (*tape).revsize; i < new_revsize * 2; i++)
                 ((int32_t*)((*tape).rev))[i] = 0;
             break;
         case INT16_T:
-            for (int i = (*tape).revsize; i < (*tape).revsize * 2; i++)
+            for (int i = (*tape).revsize; i < new_revsize * 2; i++)
                 ((int16_t*)((*tape).rev))[i] = 0;
             break;
         case INT8_T:
-            for (int i = (*tape).revsize; i < (*tape).revsize * 2; i++)
+            for (int i = (*tape).revsize; i < new_revsize * 2; i++)
                 ((int8_t*)((*tape).rev))[i] = 0;
             break;
     }
     
-    (*tape).revsize *= 2;
+    (*tape).revsize = new_revsize;
 }
 
 /* Frees the memory used by a tape. */
