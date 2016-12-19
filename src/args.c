@@ -15,8 +15,8 @@
 #include <string.h>
 
 /* Processes arguments, returns whether the program should continue. */
-/* TODO: Make more capable as more interpreter features added */
-bool args(int argc, char **argv, char *bfpath, int *cwidth, char *eofval) {
+bool args(int argc, char **argv, char *bfpath, int *cwidth, char *eofval,
+          bool *wrap) {
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--version") == 0) {
             printf("BestFriend brainfuck interpreter\n");
@@ -45,6 +45,12 @@ bool args(int argc, char **argv, char *bfpath, int *cwidth, char *eofval) {
                 *eofval = EOF_NO_CHANGE;
             } else {
                 printf("Invalid EOF behaviour, defaulting to -1.\n");
+            }
+        } else if (strncmp(argv[i], "--wrap=", 7) == 0) {
+            if (strncmp(argv[i], "--wrap=y", 8) == 0) {
+                *wrap = true;
+            } else if (strncmp(argv[i], "--wrap=n", 8) == 0) {
+                *wrap = false;
             }
         } else {
             strcpy(bfpath, argv[i]);

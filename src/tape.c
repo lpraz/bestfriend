@@ -11,11 +11,12 @@
 
 /* Stdlib imports */
 #include <inttypes.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 /* Initializes a tape. */
-Tape tape_init(int cwidth) {
+Tape tape_init(int cwidth, bool wrap) {
     void *fwd, *rev;
     
     switch (cwidth) {
@@ -39,7 +40,8 @@ Tape tape_init(int cwidth) {
         rev,
         DEFAULT_FWDSIZE,
         DEFAULT_REVSIZE,
-        cwidth
+        cwidth,
+        wrap
     };
     
     return tape;
@@ -68,13 +70,28 @@ void tape_inc(Tape *tape, int val) {
         
         switch ((*tape).cwidth) {
             case INT32_T:
-                ((int32_t*)(*tape).fwd)[(*tape).ptr] += val;
+                if ((*tape).wrap
+                        || ((int32_t*)(*tape).fwd)[(*tape).ptr]
+                        <= INT32_MAX - val)
+                    ((int32_t*)(*tape).fwd)[(*tape).ptr] += val;
+                else
+                    except("Overflowed a cell");
                 break;
             case INT16_T:
-                ((int16_t*)(*tape).fwd)[(*tape).ptr] += val;
+                if ((*tape).wrap
+                        || ((int16_t*)(*tape).fwd)[(*tape).ptr]
+                        <= INT16_MAX - val)
+                    ((int16_t*)(*tape).fwd)[(*tape).ptr] += val;
+                else
+                    except("Overflowed a cell");
                 break;
             case INT8_T:
-                ((int8_t*)(*tape).fwd)[(*tape).ptr] += val;
+                if ((*tape).wrap
+                        || ((int8_t*)(*tape).fwd)[(*tape).ptr]
+                        <= INT8_MAX - val)
+                    ((int8_t*)(*tape).fwd)[(*tape).ptr] += val;
+                else
+                    except("Overflowed a cell");
                 break;
         }
     } else {
@@ -83,13 +100,28 @@ void tape_inc(Tape *tape, int val) {
         
         switch ((*tape).cwidth) {
             case INT32_T:
-                ((int32_t*)(*tape).rev)[-(*tape).ptr - 1] += val;
+                if ((*tape).wrap
+                        || ((int32_t*)(*tape).rev)[-(*tape).ptr - 1]
+                        <= INT32_MAX - val)
+                    ((int32_t*)(*tape).rev)[-(*tape).ptr - 1] += val;
+                else
+                    except("Overflowed a cell");
                 break;
             case INT16_T:
-                ((int16_t*)(*tape).rev)[-(*tape).ptr - 1] += val;
+                if ((*tape).wrap
+                        || ((int16_t*)(*tape).rev)[-(*tape).ptr - 1]
+                        <= INT16_MAX - val)
+                    ((int16_t*)(*tape).rev)[-(*tape).ptr - 1] += val;
+                else
+                    except("Overflowed a cell");
                 break;
             case INT8_T:
-                ((int8_t*)(*tape).rev)[-(*tape).ptr - 1] += val;
+                if ((*tape).wrap
+                        || ((int8_t*)(*tape).fwd)[(*tape).ptr]
+                        <= INT8_MAX - val)
+                    ((int8_t*)(*tape).rev)[-(*tape).ptr - 1] += val;
+                else
+                    except("Overflowed a cell");
                 break;
         }
     }
@@ -103,13 +135,28 @@ void tape_dec(Tape *tape, int val) {
         
         switch ((*tape).cwidth) {
             case INT32_T:
-                ((int32_t*)(*tape).fwd)[(*tape).ptr] -= val;
+                if ((*tape).wrap ||
+                        ((int32_t*)(*tape).fwd)[(*tape).ptr]
+                        >= INT32_MIN + val)
+                    ((int32_t*)(*tape).fwd)[(*tape).ptr] -= val;
+                else
+                    except("Underflowed a cell");
                 break;
             case INT16_T:
-                ((int16_t*)(*tape).fwd)[(*tape).ptr] -= val;
+                if ((*tape).wrap ||
+                        ((int16_t*)(*tape).fwd)[(*tape).ptr]
+                        >= INT16_MIN + val)
+                    ((int16_t*)(*tape).fwd)[(*tape).ptr] -= val;
+                else
+                    except("Underflowed a cell");
                 break;
             case INT8_T:
-                ((int8_t*)(*tape).fwd)[(*tape).ptr] -= val;
+                if ((*tape).wrap ||
+                        ((int8_t*)(*tape).fwd)[(*tape).ptr]
+                        >= INT8_MIN + val)
+                    ((int8_t*)(*tape).fwd)[(*tape).ptr] -= val;
+                else
+                    except("Underflowed a cell");
                 break;
         }
     } else {
@@ -118,13 +165,28 @@ void tape_dec(Tape *tape, int val) {
         
         switch ((*tape).cwidth) {
             case INT32_T:
-                ((int32_t*)(*tape).rev)[-(*tape).ptr - 1] -= val;
+                if ((*tape).wrap ||
+                        ((int32_t*)(*tape).rev)[-(*tape).ptr - 1]
+                        >= INT32_MIN + val)
+                    ((int32_t*)(*tape).rev)[-(*tape).ptr - 1] -= val;
+                else
+                    except("Underflowed a cell");
                 break;
             case INT16_T:
-                ((int16_t*)(*tape).rev)[-(*tape).ptr - 1] -= val;
+                if ((*tape).wrap ||
+                        ((int16_t*)(*tape).rev)[-(*tape).ptr - 1]
+                        >= INT16_MIN + val)
+                    ((int16_t*)(*tape).rev)[-(*tape).ptr - 1] -= val;
+                else
+                    except("Underflowed a cell");
                 break;
             case INT8_T:
-                ((int8_t*)(*tape).rev)[-(*tape).ptr - 1] -= val;
+                if ((*tape).wrap ||
+                        ((int8_t*)(*tape).rev)[-(*tape).ptr - 1]
+                        >= INT8_MIN + val)
+                    ((int8_t*)(*tape).rev)[-(*tape).ptr - 1] -= val;
+                else
+                    except("Underflowed a cell");
                 break;
         }
     }

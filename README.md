@@ -7,7 +7,7 @@ A flexible Brainfuck interpreter written in C.
 * Be fast - optimize repeated processes.
 
 ## Features
-* Configurable cell width (8, 16 and 32-bit signed integers)
+* Configurable cell width (8, 16 and 32-bit signed integers) and overflow behaviour (wrap, throw exception)
 * Configurable input EOF behaviour (set to -1, set to 0, or no change)
 * Unbounded tape in *both* directions!
 

@@ -21,6 +21,7 @@ int main(int argc, char **argv) {
     Tape tape;
     Stack loops = stk_init(DEFAULT_STACK_SIZE);
     int cwidth = INT32_T;
+    bool wrap = true;
     char eofval = -1;
     
     /* Declarations - brainfuck file */
@@ -34,11 +35,11 @@ int main(int argc, char **argv) {
     
     /* Get command-line arguments, quit if necessary */
     bfpath[0] = '\0';
-    if (!args(argc, argv, bfpath, &cwidth, &eofval))
+    if (!args(argc, argv, bfpath, &cwidth, &eofval, &wrap))
         return EXIT_SUCCESS;
     
     /* Set up tape */
-    tape = tape_init(cwidth);
+    tape = tape_init(cwidth, wrap);
     
     /* Open file. Did it work? */
     if (bfpath[0] == '\0')

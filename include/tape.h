@@ -7,6 +7,9 @@
 #ifndef TAPE_H
 #define TAPE_H
 
+/* Stdlib imports */
+#include <stdbool.h>
+
 /* Constants - default tape size */
 #define DEFAULT_FWDSIZE 2
 #define DEFAULT_REVSIZE 1
@@ -24,10 +27,11 @@ typedef struct Tape {
     int fwdsize;
     int revsize;
     int cwidth;
+    bool wrap;
 } Tape;
 
 /* Initializes a tape. */
-Tape tape_init(int cwidth);
+Tape tape_init(int cwidth, bool wrap);
 
 /* Seeks the tape's pointer dist cells to the left. */
 void tape_seekl(Tape *tape, int dist);
