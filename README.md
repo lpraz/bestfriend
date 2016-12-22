@@ -18,8 +18,12 @@ A flexible Brainfuck interpreter written in C.
  * Support TrivialBrainfuckSubstitution languages
 
 ## Building and (Un)Installing
- * Installing: On Linux systems, just `git clone` this repository, then
-    `make`, then (`sudo`) `make install`. Your binary will be installed to
-    `/usr/bin/bestfriend` by default. If you don't like this, just chnage
-    the `PREFIX` and `INSTTARGET` variables in the makefile.
+ * Building: On Linux systems, just `git clone` this repository, then
+    `make`.
+ * Installing: After building, (`sudo`) `make install`. Your binary will be
+    installed to `/usr/bin/bfpp` by default. If you don't like this, just
+    change the `PREFIX` and `INSTTARGET` variables in the makefile.
  * Uninstalling: Just (`sudo`) `make uninstall`.
+ * Unit tests are written using mity's
+    [CUTest](https://github.com/mity/cutest) framework, which is not
+    included with this repository.

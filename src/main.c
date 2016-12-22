@@ -79,11 +79,10 @@ int main(int argc, char **argv) {
             case ',': /* Input char to cell */
                 if (stk_isempty(&loops) || !stk_top(&loops).skip) {
                     in = getchar();
-                    if (in == EOF && eofval != EOF_NO_CHANGE) {
+                    if (in == EOF && eofval != EOF_NO_CHANGE)
                         tape_set(&tape, eofval);
-                    } else {
+                    else if (in != EOF)
                         tape_set(&tape, in);
-                    }
                 }
                 break;
             case '[': /* Begin loop, jump to end if cell == 0 */
