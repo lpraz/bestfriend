@@ -73,5 +73,8 @@ void stk_expand(Stack *stk) {
 
 /* Frees the memory used by a stack. */
 void stk_free(Stack *stk) {
+    while (!stk_isempty(stk))
+        stk_pop(stk);
+    
     free((*stk).items);
 }

@@ -13,21 +13,23 @@ LIBDIR = lib
 BUILDDIR = build
 
 # Directories (install)
-#DESTDIR =
 PREFIX = /usr/bin
 INSTTARGET = bestfriend
 
-# Directoroes (test)
+# Directories (test)
 TESTDIR = test
 TESTTARGET = bin/test.out
 
 # Extension
 SRCEXT = c
 
-# Specific files
+# Specific files (build/install)
 TARGET = bin/a.out
 SOURCES = $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
 OBJECTS = $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
+
+# Test subject (blank, specify in command line)
+TESTSUBJ = 
 
 #
 # Recipes
@@ -41,12 +43,10 @@ $(TARGET): $(OBJECTS)
 $(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
 	$(CC) $(CFLAGS) -I $(INCLDIR) -c -o $@ $<
 
-# TODO: Run tests
-# Reference (based on test_stack, have cutest.h in include dir):
-# gcc -std=c99 -I include -c -o build/test_stack.o test/test_stack.c
-# gcc -std=c99 -I include -c -o build/stack.o src/stack.c
-# gcc build/stack.o build/test_stack.o -o bin/test
-# bin/test
+# Run tests (TODO: Improve on this?)
+tester:
+	$(CC) $(SRCDIR)/$(TESTSUBJ).$(SRCEXT) $(TESTDIR)/test_$(TESTSUBJ).$(SRCEXT) -I $(INCLDIR) -I $(LIBDIR) -o $(TESTTARGET)
+	$(TESTTARGET)
 
 # Install to $(PREFIX)
 .PHONY: install
