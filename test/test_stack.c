@@ -53,24 +53,9 @@ void test_stk_size(void) {
     stk_free(&stk);
 }
 
-/* Tests stk_free. */
-void test_stk_free(void) {
-    Stack stk = stk_init(DEFAULT_STACK_SIZE);
-    Loop example = {5, false};
-    
-    stk_free(&stk);
-    TEST_CHECK(stk.items != NULL);
-    
-    stk = stk_init(DEFAULT_STACK_SIZE);
-    stk_push(&stk, example);
-    stk_free(&stk);
-    TEST_CHECK(stk.items != NULL);
-}
-
 TEST_LIST = {
     {"stk_init", test_stk_init},
     {"stk_isempty", test_stk_isempty},
     {"stk_size", test_stk_size},
-    {"stk_free", test_stk_free},
     {0}
 };

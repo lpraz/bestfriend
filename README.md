@@ -24,6 +24,10 @@ A flexible Brainfuck interpreter written in C.
     installed to `/usr/bin/bfpp` by default. If you don't like this, just
     change the `PREFIX` and `INSTTARGET` variables in the makefile.
  * Uninstalling: Just (`sudo`) `make uninstall`.
- * Unit tests are written using mity's
+
+## Contributing
+ * Feel free to add any bug reports, feature requests, etc. as an issue.
+ * Running tests: Unit tests are written using mity's
     [CUTest](https://github.com/mity/cutest) framework, which is not
-    included with this repository.
+    included with this repository. To run tests, download `cutest.h` and
+    place it at `lib/cutest`.
