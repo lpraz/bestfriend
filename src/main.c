@@ -58,19 +58,19 @@ int main(int argc, char **argv) {
         switch(cmd) {
             case '+': /* Increment cell at ptr */
                 if (stk_isempty(&loops) || !stk_top(&loops).skip)
-                    tape_inc(&tape, 1);
+                    tape_chg(&tape, 1);
                 break;
             case '-': /* Decrement cell at ptr */
                 if (stk_isempty(&loops) || !stk_top(&loops).skip)
-                    tape_dec(&tape, 1);
+                    tape_chg(&tape, -1);
                 break;
             case '>': /* Seek right */
                 if (stk_isempty(&loops) || !stk_top(&loops).skip)
-                    tape_seekr(&tape, 1);
+                    tape_seek(&tape, 1);
                 break;
             case '<': /* Seek left */
                 if (stk_isempty(&loops) || !stk_top(&loops).skip)
-                    tape_seekl(&tape, 1);
+                    tape_seek(&tape, -1);
                 break;
             case '.': /* Output cell as char */
                 if (stk_isempty(&loops) || !stk_top(&loops).skip)

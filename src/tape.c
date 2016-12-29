@@ -20,7 +20,7 @@ Tape tape_init(int cwidth, bool wrap, int max_fwdsize, int max_revsize) {
     void *fwd, *rev;
     
     switch (cwidth) {
-        case INT32_T:
+         case INT32_T:
             fwd = (int32_t*)calloc(DEFAULT_FWDSIZE, sizeof(int32_t));
             rev = (int32_t*)calloc(DEFAULT_REVSIZE, sizeof(int32_t));
             break;
@@ -49,22 +49,17 @@ Tape tape_init(int cwidth, bool wrap, int max_fwdsize, int max_revsize) {
     return tape;
 }
 
-/* Seeks the tape's pointer dist cells to the left. */
-void tape_seekl(Tape *tape, int dist) {
-    if ((*tape).max_revsize == INFINITE
-            || (*tape).ptr - dist > -(*tape).max_revsize)
-        (*tape).ptr -= dist;
-    else
-        except("Seeked left to a cell that is out of bounds");
-}
-
-/* Seeks the tape's pointer dist cells to the right. */
-void tape_seekr(Tape *tape, int dist) {
-    if ((*tape).max_fwdsize == INFINITE
+/* Seeks the tape's pointer dist cells away from the current position. */
+void tape_seek(Tape *tape, int dist) {
+    if ((*tape).ptr + dist >= 0
+            && ((*tape).max_fwdsize == INFINITE
             || (*tape).ptr + dist < (*tape).max_fwdsize)
+        || (*tape).ptr + dist < 0
+            && ((*tape).max_revsize == INFINITE
+            || (*tape).ptr + dist > -(*tape).max_revsize))
         (*tape).ptr += dist;
     else
-        except("Seeked right to a cell that is out of bounds");
+        except("Seeked to a cell that is out of bounds");
 }
 
 /* Seeks the tape pointer to pos. */
@@ -77,8 +72,8 @@ void tape_seeks(Tape *tape, int pos) {
         except("Seeked to a cell that is out of bounds");
 }
 
-/* Increments the cell at the tape's pointer by val. */
-void tape_inc(Tape *tape, int val) {
+/* Transposes the cell at the tape's pointer by val. */
+void tape_chg(Tape *tape, int val) {
     if ((*tape).ptr >= 0) {
         while ((*tape).ptr >= (*tape).fwdsize)
             tape_fwdgrow(tape);
@@ -86,24 +81,30 @@ void tape_inc(Tape *tape, int val) {
         switch ((*tape).cwidth) {
             case INT32_T:
                 if ((*tape).wrap
-                        || ((int32_t*)(*tape).fwd)[(*tape).ptr]
+                    || (val >= 0 && ((int32_t*)(*tape).fwd)[(*tape).ptr]
                         <= INT32_MAX - val)
+                    || (val < 0 && ((int32_t*)(*tape).fwd)[(*tape).ptr]
+                        >= INT32_MIN + val))
                     ((int32_t*)(*tape).fwd)[(*tape).ptr] += val;
                 else
                     except("Overflowed a cell");
                 break;
             case INT16_T:
                 if ((*tape).wrap
-                        || ((int16_t*)(*tape).fwd)[(*tape).ptr]
+                    || (val >= 0 && ((int16_t*)(*tape).fwd)[(*tape).ptr]
                         <= INT16_MAX - val)
+                    || (val < 0 && ((int16_t*)(*tape).fwd)[(*tape).ptr]
+                        >= INT16_MIN + val))
                     ((int16_t*)(*tape).fwd)[(*tape).ptr] += val;
                 else
                     except("Overflowed a cell");
                 break;
             case INT8_T:
                 if ((*tape).wrap
-                        || ((int8_t*)(*tape).fwd)[(*tape).ptr]
+                    || (val >= 0 && ((int8_t*)(*tape).fwd)[(*tape).ptr]
                         <= INT8_MAX - val)
+                    || (val < 0 && ((int8_t*)(*tape).fwd)[(*tape).ptr]
+                        >= INT8_MIN + val))
                     ((int8_t*)(*tape).fwd)[(*tape).ptr] += val;
                 else
                     except("Overflowed a cell");
@@ -116,92 +117,39 @@ void tape_inc(Tape *tape, int val) {
         switch ((*tape).cwidth) {
             case INT32_T:
                 if ((*tape).wrap
-                        || ((int32_t*)(*tape).rev)[-(*tape).ptr - 1]
+                    || (val >= 0 && 
+                        ((int32_t*)(*tape).rev)[-(*tape).ptr - 1]
                         <= INT32_MAX - val)
+                    || (val < 0 &&
+                        ((int32_t*)(*tape).rev)[-(*tape).ptr - 1]
+                        >= INT32_MIN + val))
                     ((int32_t*)(*tape).rev)[-(*tape).ptr - 1] += val;
                 else
                     except("Overflowed a cell");
                 break;
             case INT16_T:
                 if ((*tape).wrap
-                        || ((int16_t*)(*tape).rev)[-(*tape).ptr - 1]
+                    || (val >= 0 &&
+                        ((int16_t*)(*tape).rev)[-(*tape).ptr - 1]
                         <= INT16_MAX - val)
+                    || (val < 0 &&
+                        ((int16_t*)(*tape).rev)[-(*tape).ptr - 1]
+                        >= INT16_MIN + val))
                     ((int16_t*)(*tape).rev)[-(*tape).ptr - 1] += val;
                 else
                     except("Overflowed a cell");
                 break;
             case INT8_T:
                 if ((*tape).wrap
-                        || ((int8_t*)(*tape).fwd)[(*tape).ptr]
+                    || (val >= 0 &&
+                        ((int8_t*)(*tape).fwd)[(*tape).ptr]
                         <= INT8_MAX - val)
+                    || (val < 0 &&
+                        ((int8_t*)(*tape).fwd)[(*tape).ptr]
+                        >= INT8_MIN + val))
                     ((int8_t*)(*tape).rev)[-(*tape).ptr - 1] += val;
                 else
                     except("Overflowed a cell");
-                break;
-        }
-    }
-}
-
-/* Decrements the cell at the tape's pointer by val. */
-void tape_dec(Tape *tape, int val) {
-    if ((*tape).ptr >= 0) {
-        while ((*tape).ptr >= (*tape).fwdsize)
-            tape_fwdgrow(tape);
-        
-        switch ((*tape).cwidth) {
-            case INT32_T:
-                if ((*tape).wrap ||
-                        ((int32_t*)(*tape).fwd)[(*tape).ptr]
-                        >= INT32_MIN + val)
-                    ((int32_t*)(*tape).fwd)[(*tape).ptr] -= val;
-                else
-                    except("Underflowed a cell");
-                break;
-            case INT16_T:
-                if ((*tape).wrap ||
-                        ((int16_t*)(*tape).fwd)[(*tape).ptr]
-                        >= INT16_MIN + val)
-                    ((int16_t*)(*tape).fwd)[(*tape).ptr] -= val;
-                else
-                    except("Underflowed a cell");
-                break;
-            case INT8_T:
-                if ((*tape).wrap ||
-                        ((int8_t*)(*tape).fwd)[(*tape).ptr]
-                        >= INT8_MIN + val)
-                    ((int8_t*)(*tape).fwd)[(*tape).ptr] -= val;
-                else
-                    except("Underflowed a cell");
-                break;
-        }
-    } else {
-        while ((-(*tape).ptr - 1) >= (*tape).revsize)
-            tape_revgrow(tape);
-        
-        switch ((*tape).cwidth) {
-            case INT32_T:
-                if ((*tape).wrap ||
-                        ((int32_t*)(*tape).rev)[-(*tape).ptr - 1]
-                        >= INT32_MIN + val)
-                    ((int32_t*)(*tape).rev)[-(*tape).ptr - 1] -= val;
-                else
-                    except("Underflowed a cell");
-                break;
-            case INT16_T:
-                if ((*tape).wrap ||
-                        ((int16_t*)(*tape).rev)[-(*tape).ptr - 1]
-                        >= INT16_MIN + val)
-                    ((int16_t*)(*tape).rev)[-(*tape).ptr - 1] -= val;
-                else
-                    except("Underflowed a cell");
-                break;
-            case INT8_T:
-                if ((*tape).wrap ||
-                        ((int8_t*)(*tape).rev)[-(*tape).ptr - 1]
-                        >= INT8_MIN + val)
-                    ((int8_t*)(*tape).rev)[-(*tape).ptr - 1] -= val;
-                else
-                    except("Underflowed a cell");
                 break;
         }
     }

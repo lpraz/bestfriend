@@ -38,20 +38,14 @@ typedef struct Tape {
 /* Initializes a tape. */
 Tape tape_init(int cwidth, bool wrap, int max_fwdsize, int max_revsize);
 
-/* Seeks the tape's pointer dist cells to the left. */
-void tape_seekl(Tape *tape, int dist);
-
-/* Seeks the tape's pointer dist cells to the right. */
-void tape_seekr(Tape *tape, int dist);
+/* Seeks the tape's pointer dist cells away from the current position. */
+void tape_seek(Tape *tape, int dist);
 
 /* Seeks the tape pointer to pos. */
 void tape_seeks(Tape *tape, int pos);
 
-/* Increments the cell at the tape's pointer by val. */
-void tape_inc(Tape *tape, int val);
-
-/* Decrements the cell at the tape's pointer by val. */
-void tape_dec(Tape *tape, int val);
+/* Transposes the cell at the tape's pointer by val. */
+void tape_chg(Tape *tape, int val);
 
 /* Sets the cell at the tape's pointer to val. */
 void tape_set(Tape *tape, int val);

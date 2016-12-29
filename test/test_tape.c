@@ -25,70 +25,36 @@ void test_tape_init() {
     tape_free(&tape);
 }
 
-/* Tests tape_seekl. */
-void test_tape_seekl() {
+/* Tests tape_seek. */
+void test_tape_seek() {
     Tape tape = tape_init(INT8_T, true, INFINITE, INFINITE);
     TEST_CHECK(tape.ptr == 0);
     
-    tape_seekl(&tape, 5);
-    TEST_CHECK(tape.ptr == -5);
-    
-    tape_seekl(&tape, -2);
-    TEST_CHECK(tape.ptr == -3);
-    
-    tape_seekl(&tape, 0);
-    TEST_CHECK(tape.ptr == -3);
-    
-    tape_free(&tape);
-}
-
-/* Tests tape_seekr. */
-void test_tape_seekr() {
-    Tape tape = tape_init(INT8_T, true, INFINITE, INFINITE);
-    TEST_CHECK(tape.ptr == 0);
-    
-    tape_seekr(&tape, 5);
+    tape_seek(&tape, 5);
     TEST_CHECK(tape.ptr == 5);
     
-    tape_seekr(&tape, -2);
+    tape_seek(&tape, -2);
     TEST_CHECK(tape.ptr == 3);
     
-    tape_seekr(&tape, 0);
+    tape_seek(&tape, 0);
     TEST_CHECK(tape.ptr == 3)
     ;
     tape_free(&tape);
 }
 
-/* Tests tape_inc. */
-void test_tape_inc() {
+/* Tests tape_chg. */
+void test_tape_chg() {
     Tape tape = tape_init(INT8_T, true, INFINITE, INFINITE);
     TEST_CHECK(tape_get(&tape) == 0);
     
-    tape_inc(&tape, 5);
+    tape_chg(&tape, 5);
     TEST_CHECK(tape_get(&tape) == 5);
     
-    tape_inc(&tape, -2);
+    tape_chg(&tape, -2);
     TEST_CHECK(tape_get(&tape) == 3);
     
-    tape_inc(&tape, 0);
+    tape_chg(&tape, 0);
     TEST_CHECK(tape_get(&tape) == 3);
-    
-    tape_free(&tape);
-}
-
-/* Tests tape_dec. */
-void test_tape_dec() {
-    Tape tape = tape_init(INT8_T, true, INFINITE, INFINITE);
-    TEST_CHECK(tape_get(&tape) == 0);
-    
-    tape_dec(&tape, 5);
-    TEST_CHECK(tape_get(&tape) == -5);
-    
-    tape_dec(&tape, -2);
-    TEST_CHECK(tape_get(&tape) == -3);
-    
-    tape_dec(&tape, 0);
-    TEST_CHECK(tape_get(&tape) == -3);
     
     tape_free(&tape);
 }
@@ -109,10 +75,8 @@ void test_tape_set_get() {
 
 TEST_LIST = {
     {"tape_init", test_tape_init},
-    {"tape_seekl", test_tape_seekl},
-    {"tape_seekr", test_tape_seekr},
-    {"tape_inc", test_tape_inc},
-    {"tape_dec", test_tape_dec},
+    {"tape_seek", test_tape_seek},
+    {"tape_chg", test_tape_chg},
     {"tape_set/tape_get", test_tape_set_get},
     {0}
 };
