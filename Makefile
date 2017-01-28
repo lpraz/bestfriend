@@ -13,7 +13,7 @@ LIBDIR = lib
 BUILDDIR = build
 
 # Directories (install)
-PREFIX = /usr/bin
+PREFIX = /usr/bin/local
 INSTTARGET = bestfriend
 
 # Directories (test)
